@@ -1,6 +1,6 @@
 ---
 name: token-efficient-workflow
-description: Use for multi-step or long-running software development work (implementation, debugging, refactoring, test fixing, audits). Works in bounded stages with measurable acceptance criteria and a project-local checkpoint, runs focused tests before broad suites, keeps command output out of the context, caps identical retries at two, avoids unnecessary subagents, keeps the user's selected model, and recommends context resets between independent stages.
+description: Use for multi-step or long-running software development work (implementation, debugging, refactoring, test fixing, audits). Works in bounded stages with measurable acceptance criteria and a project-local checkpoint, runs focused tests before broad suites, keeps command output out of the context, caps identical retries at two, avoids unnecessary subagents, never changes the user's selected model or effort settings, and recommends context resets between independent stages.
 ---
 
 # Token-efficient workflow
@@ -42,10 +42,15 @@ or the project's own instructions — they always take precedence over this skil
   code, record the signature, both attempts and your best hypothesis under **Blockers**, and ask the user.
   A different signature starts a new count.
 
-## 5. Model selection
-- Use the model the user selected. **Never switch models automatically** and never present a model change as a
-  token-saving step. If you believe a different model is needed, say so once with a reason; the user decides.
-- Record the model used per stage in the checkpoint's **Model log**. Never enable or suggest paid API billing.
+## 5. Model selection (strict: the user's choice is final)
+- Work with the model and effort/thinking settings the user already selected. Claude Lean never changes them.
+- Never edit the `model` field (or any effort or thinking setting) in Claude Code settings files.
+- Never run `/model`, never set model-selection environment variables (such as `ANTHROPIC_MODEL`), and never pass
+  model-selection command-line arguments.
+- Never switch models automatically, and never recommend a model change to reduce token usage. Efficiency comes from
+  short contexts, fewer calls, small outputs and bounded retries.
+- Record the model in use per stage in the checkpoint's **Model log** (observe it; do not change it).
+- Never enable or suggest paid API billing.
 
 ## 6. Finish a stage
 1. Update the checkpoint: stage status, files changed, tests, failures, decisions, next action.

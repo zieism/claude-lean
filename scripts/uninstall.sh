@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# uninstall.sh — remove what install.sh installed (non-destructive).
+# uninstall.sh — remove what Claude Lean's install.sh installed (non-destructive).
 #   scripts/uninstall.sh [--dry-run] [--force]
 # Removes only files listed in <claude dir>/budget-manager/MANIFEST whose content is unchanged since installation.
 # Modified files are kept unless --force (then a backup <file>.bak-<UTC timestamp> is left in place).
@@ -31,5 +31,5 @@ if [ "$KEPT" = 0 ]; then
     if [ -d "$d" ] && [ -z "$(ls -A "$d")" ]; then run rmdir "$d"; fi
   done
 fi
-echo "settings.json, your model selection and project checkpoints were not touched."
+echo "Claude settings, your model and effort selection, and project checkpoints were not touched."
 [ "$KEPT" = 1 ] && exit 3 || exit 0

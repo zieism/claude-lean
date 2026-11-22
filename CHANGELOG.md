@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.1
+- Renamed the project to **Claude Lean** (repository `zieism/claude-lean`; old URLs redirect). The skill name
+  `token-efficient-workflow` and the tools folder `~/.claude/budget-manager/` are kept for compatibility.
+- Strict model-preservation policy in the skill and docs: never edit `model` or effort settings, never run `/model`,
+  never set model environment variables or CLI arguments, never switch models automatically, never recommend a
+  model change to save tokens.
+- New `TestModelPreservation` tests: the full install → re-install → project → force → quiet → report → uninstall
+  lifecycle leaves settings files, model, effort and unrelated skills byte-identical; scripts contain no
+  model-selection code.
+- CI: Python 3.8 runs on `ubuntu-22.04` (ubuntu-latest no longer provides 3.8); Python 3.12 on Ubuntu and macOS.
+- Clearer README statements on quotas, savings, usage limits, session resets and billing.
+
 ## v0.1.0 — initial release
 - `token-efficient-workflow` skill: bounded stages with measurable acceptance criteria, project checkpoints,
   focused-then-broad testing, quiet command output, two-attempt failure budget, no unnecessary subagents,

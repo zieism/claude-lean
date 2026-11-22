@@ -4,7 +4,8 @@
 - Writes only: `<claude dir>/skills/token-efficient-workflow/SKILL.md`, `<claude dir>/budget-manager/*`, and (with
   `--project`) `<project>/.claude/checkpoints/*` and one `.gitignore` line. `<claude dir>` is `$CLAUDE_CONFIG_DIR` or
   `~/.claude`.
-- Never reads or writes credentials, `settings.json`, model selection, billing, or network resources.
+- Never reads or writes credentials, Claude settings files, model or effort selection, model environment variables,
+  billing, or network resources.
 - `usage_report.py` reads transcripts **read-only** and prints aggregates only (no prompts, replies, tool inputs or
   outputs).
 

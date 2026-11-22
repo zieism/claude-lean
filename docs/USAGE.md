@@ -39,5 +39,6 @@ quiet.sh NAME -- <command> [args...]
 The exit status is the command's own. Logs go to `CC_LOG_DIR` (default `.claude/logs/`).
 
 ## Model selection
-The skill uses whatever model you selected and never switches models. If it believes another model is warranted,
-it says so once and leaves the decision to you.
+Claude Lean works with whatever model and effort settings you selected. It never edits the `model` field, never
+runs `/model`, never sets model environment variables or CLI arguments, never switches models automatically, and
+never recommends a model change to reduce token usage.

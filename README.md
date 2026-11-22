@@ -1,4 +1,6 @@
-# Claude Code Budget Manager
+# Claude Lean
+
+_Formerly “Claude Code Budget Manager”. The skill keeps its name `token-efficient-workflow` for compatibility._
 
 A lightweight, dependency-free toolkit for **reducing unnecessary token consumption in Claude Code** during
 long-running development work, without lowering reasoning quality or test discipline.
@@ -6,8 +8,13 @@ long-running development work, without lowering reasoning quality or test discip
 It gives Claude a disciplined working style (a skill), gives you durable task state (checkpoints) so sessions can be
 reset safely, keeps noisy command output out of the context, and lets you **measure** what a session actually used.
 
-> Token savings are workload-dependent and **not guaranteed**. This toolkit does not increase Claude subscription
-> limits, does not change your model and never enables paid API billing.
+> **What Claude Lean is — and is not**
+> - It optimizes **workflow efficiency** (context size, call count, output noise, retries), **not** subscription quotas.
+> - It **never changes your selected model** or effort settings, and never recommends a model change to save tokens.
+> - It does **not guarantee** token savings: effects depend on your workload.
+> - It **cannot bypass** Claude usage limits.
+> - It does **not reset sessions automatically**: it only recommends when a fresh session would help.
+> - It does **not enable paid API billing** and makes no API calls.
 
 ## What it does
 - **`token-efficient-workflow` skill:**
@@ -58,8 +65,8 @@ flowchart LR
 ## Installation
 Inspect before you run anything:
 ```bash
-git clone --branch v0.1.0 https://github.com/zieism/claude-code-budget-manager.git
-cd claude-code-budget-manager
+git clone --branch v0.1.1 https://github.com/zieism/claude-lean.git
+cd claude-lean
 less scripts/install.sh
 scripts/install.sh --dry-run              # shows every action, changes nothing
 scripts/install.sh                        # user-level skill + tools
@@ -106,6 +113,7 @@ Checkpoints keep what was written down, not every detail of a conversation. See
 |---|---|
 | Skill not listed | Start a **new** session after installing; check `~/.claude/skills/token-efficient-workflow/SKILL.md` exists (or `$CLAUDE_CONFIG_DIR/...`). |
 | Installer exits 3 with `KEEP` | A file differs from this version (your edits or another tool). Review it; use `--force` to replace it (a backup is kept). |
+| Tools are under `~/.claude/budget-manager/` | Legacy folder name kept in v0.1.x so v0.1.0 installs upgrade and uninstall cleanly. |
 | `usage_report.py` exits 3 | Your Claude Code transcript format is not recognised. Please open an issue with your Claude Code version (no transcript content). |
 | `no matching sessions` | Check `--root`, `--session` prefix and the time window (UTC). |
 | Windows | Use the manual skill copy and `py scripts\usage_report.py`; shell scripts need Git Bash or WSL. |

@@ -180,5 +180,66 @@ class TestPackage(unittest.TestCase):
                     self.assertIsNone(re.search(p, t, re.I), f"{f.relative_to(ROOT)} matches {p}")
 
 
+class TestModelPreservation(Base):
+    """Claude Lean must never change the user's model or effort selection, or any unrelated setting."""
+    OWNED = ("skills/token-efficient-workflow/", "budget-manager/", "projects/")
+
+    def setUp(self):
+        super().setUp()
+        self.settings.write_text(json.dumps({"model": "opus", "effortLevel": "high", "alwaysThinkingEnabled": True,
+                                             "env": {"ANTHROPIC_MODEL": "user-choice", "MAX_THINKING_TOKENS": "16000"},
+                                             "theme": "dark", "permissions": {"allow": ["Read"]}}, indent=2))
+        (self.cdir / "settings.local.json").write_text(json.dumps({"model": "sonnet", "effortLevel": "low"}))
+        other = self.cdir / "skills/my-other-skill/SKILL.md"; other.parent.mkdir(parents=True)
+        other.write_text("---\nname: my-other-skill\ndescription: unrelated\n---\nbody\n")
+        transcript(self.cdir / "projects")
+
+    def snap(self):
+        return {str(f.relative_to(self.cdir)): sha(f) for f in self.cdir.rglob("*") if f.is_file()
+                and not str(f.relative_to(self.cdir)).startswith(self.OWNED)}
+
+    def test_full_lifecycle_never_touches_model_effort_or_unrelated_files(self):
+        before = self.snap()
+        env = {**self.env, "ANTHROPIC_MODEL": "must-not-be-written-anywhere"}
+        proj = self.tmp / "proj"; proj.mkdir()
+        for args in ([], [], ["--project", str(proj)], ["--force"]):
+            self.assertIn(sh("install.sh", *args, env=env).returncode, (0,), args)
+            self.assertEqual(self.snap(), before, f"install {args} changed a non-toolkit file")
+        q = subprocess.run(SH + [str(self.cdir / "budget-manager/quiet.sh"), "t", "--", "true"], capture_output=True, text=True,
+                           env={**os.environ, **env, "CC_LOG_DIR": str(self.tmp / "logs")})
+        self.assertEqual(q.returncode, 0)
+        r = subprocess.run([sys.executable, str(self.cdir / "budget-manager/usage_report.py"), "--json"], capture_output=True,
+                           text=True, env={**os.environ, **env})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(sh("uninstall.sh", env=env).returncode, 0)
+        self.assertEqual(self.snap(), before)
+        s = json.loads(self.settings.read_text())
+        self.assertEqual((s["model"], s["effortLevel"], s["alwaysThinkingEnabled"], s["env"]["ANTHROPIC_MODEL"]),
+                         ("opus", "high", True, "user-choice"))
+        self.assertEqual(json.loads((self.cdir / "settings.local.json").read_text())["model"], "sonnet")
+        for f in list(self.tmp.rglob("*")):
+            if f.is_file() and f.suffix in (".json", ".md", ".sh", ".py") and "projects" not in f.parts:
+                self.assertNotIn("must-not-be-written-anywhere", f.read_text(errors="ignore"), str(f))
+
+    def test_scripts_contain_no_model_selection_code(self):
+        forbidden = [r"ANTHROPIC_(DEFAULT_[A-Z]+_)?MODEL", r"CLAUDE_CODE_SUBAGENT_MODEL", r"--model\b", r"(^|[\s\"'])/model\b",
+                     r"\bclaude\s+(-p|--print)\b", r"effortLevel", r"alwaysThinkingEnabled",
+                     r"(>|\bcp\b|\bmv\b|\btee\b|sed -i|write_text|open\([^)]*[\"']w)[^\n]*settings(\.local)?\.json"]
+        for f in [p for p in (ROOT / "scripts").iterdir() if p.suffix in (".sh", ".py")]:
+            t = f.read_text()
+            for pat in forbidden:
+                self.assertIsNone(re.search(pat, t, re.M), f"{f.name} matches {pat}")
+
+    def test_skill_and_docs_never_recommend_model_switching(self):
+        skill = (ROOT / "skills/token-efficient-workflow/SKILL.md").read_text()
+        for must in ("Never switch models automatically", "never recommend a model change to reduce token usage",
+                     "Never run `/model`", "effort"):
+            self.assertIn(must, skill)
+        self.assertIsNone(re.search(r"\b(opus|sonnet|haiku)\b", skill, re.I))
+        for f in [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), ROOT / "skills/token-efficient-workflow/SKILL.md"]:
+            self.assertIsNone(re.search(r"(switch|change|use)\w* (to )?(a )?(cheaper|smaller|faster) model|switch\w* to (opus|sonnet|haiku)",
+                                        f.read_text(), re.I), f.name)
+
+
 if __name__ == "__main__":
     unittest.main()

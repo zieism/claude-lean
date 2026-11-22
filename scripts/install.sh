@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# install.sh — install the Claude Code Budget Manager (idempotent, non-destructive).
+# install.sh — install Claude Lean (idempotent, non-destructive).
 #   scripts/install.sh [--dry-run] [--force] [--project DIR] [--no-tools]
 # Installs:
 #   <claude dir>/skills/token-efficient-workflow/SKILL.md     (the skill)
-#   <claude dir>/budget-manager/{quiet.sh,usage_report.py}   (helper tools) + MANIFEST (sha256 of installed files)
+#   <claude dir>/budget-manager/{quiet.sh,usage_report.py}   (helper tools; legacy folder name kept for upgrades) + MANIFEST
 #   with --project DIR: DIR/.claude/checkpoints/{TEMPLATE.md,README.md,PROJECT_MEMORY.md,ACTIVE} (only if absent)
 # <claude dir> = $CLAUDE_CONFIG_DIR if set, else ~/.claude.
-# Never touches settings.json, the selected model, credentials, or anything outside the paths above.
+# Never touches settings.json / settings.local.json, the selected model or effort settings, model environment
+# variables, credentials, or anything outside the paths above.
 # A file that differs from what this installer last wrote (your edits) is NOT overwritten without --force;
 # with --force it is backed up first (<file>.bak-<UTC timestamp>).
 set -euo pipefail
@@ -42,7 +43,7 @@ place() {  # place SRC_FILE DEST_FILE MODE
   NEW_MAN="$NEW_MAN$hs $d
 "
 }
-echo "Claude Code Budget Manager — installing into $CLAUDE_DIR"
+echo "Claude Lean v$(cat "$SRC/VERSION" 2>/dev/null || echo dev) — installing into $CLAUDE_DIR"
 place "$SRC/skills/token-efficient-workflow/SKILL.md" "$CLAUDE_DIR/skills/token-efficient-workflow/SKILL.md" 644
 if [ "$TOOLS" = 1 ]; then
   place "$SRC/scripts/quiet.sh" "$CLAUDE_DIR/budget-manager/quiet.sh" 755
@@ -65,6 +66,6 @@ if [ -n "$PROJECT" ]; then
     if ! grep -qxF '.claude/logs/' "$PROJECT/.gitignore" 2>/dev/null; then echo "append    $PROJECT/.gitignore (.claude/logs/)"; [ "$DRY" = 1 ] || printf '\n.claude/logs/\n' >> "$PROJECT/.gitignore"; fi
   fi
 fi
-echo "settings.json and your model selection were not touched."
+echo "Claude settings, your model and effort selection were not touched."
 [ "$CONFLICT" = 1 ] && { echo "Some files were kept because they differ from this version (see KEEP above)."; exit 3; }
 echo "Done. Start a new Claude Code session to load the skill."

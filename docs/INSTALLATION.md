@@ -5,12 +5,12 @@ No other dependencies.
 
 ## 1. Get the files and inspect them first
 ```bash
-git clone https://github.com/zieism/claude-code-budget-manager.git
-cd claude-code-budget-manager
+git clone https://github.com/zieism/claude-lean.git
+cd claude-lean
 less scripts/install.sh            # read what it does before running it
 scripts/install.sh --dry-run       # shows every action, changes nothing
 ```
-Prefer a pinned release: `git checkout v0.1.0` (or download the release archive and verify it before use).
+The repository was renamed from `claude-code-budget-manager`; old URLs redirect. Prefer a pinned release: `git checkout v0.1.1` (or download the release archive and verify it before use).
 Do not pipe remote scripts into a shell.
 
 ## 2. Install
@@ -20,7 +20,7 @@ scripts/install.sh --project /path/to/repo  # also create .claude/checkpoints/ t
 ```
 One-command form (still inspectable, pinned):
 ```bash
-git clone --branch v0.1.0 https://github.com/zieism/claude-code-budget-manager.git && claude-code-budget-manager/scripts/install.sh --dry-run
+git clone --branch v0.1.1 https://github.com/zieism/claude-lean.git && claude-lean/scripts/install.sh --dry-run
 ```
 Run it again without `--dry-run` after reviewing the plan.
 
@@ -37,7 +37,8 @@ Behaviour:
 - **Upgrades** replace only files whose content still matches what the installer wrote.
 - **Your edits are kept:** a modified or foreign file is reported as `KEEP` (exit code 3). `--force` replaces it
   after saving `<file>.bak-<timestamp>`.
-- `settings.json`, your model selection and billing are never touched.
+- Claude settings files, your model and effort selection, model environment variables and billing are never touched.
+- The helper tools keep the legacy folder `budget-manager/` in v0.1.x for compatibility with v0.1.0 installs.
 
 Start a new Claude Code session afterwards; check with `/skills` (or ask “which skills are available?”).
 
