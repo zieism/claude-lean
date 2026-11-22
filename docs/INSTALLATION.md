@@ -10,7 +10,7 @@ cd claude-lean
 less scripts/install.sh            # read what it does before running it
 scripts/install.sh --dry-run       # shows every action, changes nothing
 ```
-The repository was renamed from `claude-code-budget-manager`; old URLs redirect. Prefer a pinned release: `git checkout v0.1.1` (or download the release archive and verify it before use).
+The repository was renamed from `claude-code-budget-manager`; old URLs redirect. Prefer a pinned release: `git checkout v0.1.2` (or download the release archive and verify it before use).
 Do not pipe remote scripts into a shell.
 
 ## 2. Install
@@ -20,7 +20,7 @@ scripts/install.sh --project /path/to/repo  # also create .claude/checkpoints/ t
 ```
 One-command form (still inspectable, pinned):
 ```bash
-git clone --branch v0.1.1 https://github.com/zieism/claude-lean.git && claude-lean/scripts/install.sh --dry-run
+git clone --branch v0.1.2 https://github.com/zieism/claude-lean.git && claude-lean/scripts/install.sh --dry-run
 ```
 Run it again without `--dry-run` after reviewing the plan.
 

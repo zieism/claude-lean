@@ -1,5 +1,9 @@
 # Claude Lean
 
+[![tests](https://github.com/zieism/claude-lean/actions/workflows/tests.yml/badge.svg)](https://github.com/zieism/claude-lean/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/zieism/claude-lean)](https://github.com/zieism/claude-lean/releases/latest)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 _Formerly “Claude Code Budget Manager”. Invoke it with **`/claude-lean`**; `/token-efficient-workflow` remains as a deprecated alias (see [Migration](#migrating-from-v010--v011))._
 
 A lightweight, dependency-free toolkit for **reducing unnecessary token consumption in Claude Code** during
@@ -15,6 +19,14 @@ reset safely, keeps noisy command output out of the context, and lets you **meas
 > - It **cannot bypass** Claude usage limits.
 > - It does **not reset sessions automatically**: it only recommends when a fresh session would help.
 > - It does **not enable paid API billing** and makes no API calls.
+
+## Commands at a glance
+| Command | What it does |
+|---|---|
+| `/claude-lean <task>` | Run a task with the Claude Lean workflow (primary command) |
+| `/token-efficient-workflow` | Deprecated compatibility skill: loads `claude-lean` |
+| `~/.claude/budget-manager/quiet.sh NAME -- <cmd>` | Run a command with the full log on disk and a short summary in context |
+| `~/.claude/budget-manager/usage_report.py --session <id>` | Read-only token report for a session (not subscription usage) |
 
 ## What it does
 - **`claude-lean` skill** (`/claude-lean`):
@@ -65,7 +77,7 @@ flowchart LR
 ## Installation
 Inspect before you run anything:
 ```bash
-git clone --branch v0.1.1 https://github.com/zieism/claude-lean.git
+git clone --branch v0.1.2 https://github.com/zieism/claude-lean.git
 cd claude-lean
 less scripts/install.sh
 scripts/install.sh --dry-run              # shows every action, changes nothing
