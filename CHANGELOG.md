@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.3 — documentation consistency release
+- Installation docs now use the exact, verified sequence: `git clone --branch v0.1.3
+  https://github.com/zieism/claude-lean.git`, `cd claude-lean`, `less scripts/install.sh`,
+  `scripts/install.sh --dry-run`, `scripts/install.sh` (plus the optional `--project` example).
+- The v0.1.2 tag's README still pointed to v0.1.1. This release makes the latest tag's README match `main`.
+- Consistent naming: Claude Lean, `/claude-lean`; `/token-efficient-workflow` is described as a deprecated
+  compatibility skill; a new "Installation paths" section separates current paths from legacy names.
+- No changes to skill behaviour, installer logic or tests.
+
 ## v0.1.2
 - The primary skill is now **`claude-lean`** (`/claude-lean`), matching the project name.
 - `token-efficient-workflow` stays as a **deprecated alias** skill that loads `claude-lean`. It is a plain stub

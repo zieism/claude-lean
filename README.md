@@ -79,7 +79,7 @@ flowchart LR
 ## Installation
 Inspect before you run anything:
 ```bash
-git clone --branch v0.1.2 https://github.com/zieism/claude-lean.git
+git clone --branch v0.1.3 https://github.com/zieism/claude-lean.git
 cd claude-lean
 less scripts/install.sh
 scripts/install.sh --dry-run
@@ -97,7 +97,7 @@ scripts/install.sh --project ~/code/app
 - Manual and Windows instructions: [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 ## Installation paths
-Current installation (v0.1.2). `~` means `$CLAUDE_CONFIG_DIR` if set, otherwise your home directory's `.claude`.
+Current installation (v0.1.3). `~` means `$CLAUDE_CONFIG_DIR` if set, otherwise your home directory's `.claude`.
 
 | Path | Status |
 |---|---|
