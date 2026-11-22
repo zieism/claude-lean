@@ -28,8 +28,8 @@ What gets installed (`<claude dir>` = `$CLAUDE_CONFIG_DIR` or `~/.claude`):
 | Path | Purpose |
 |---|---|
 | `<claude dir>/skills/claude-lean/SKILL.md` | the skill, `/claude-lean` (user level: all projects) |
-| `<claude dir>/skills/token-efficient-workflow/SKILL.md` | deprecated alias that loads `claude-lean` (skip with `--no-alias`; a customized old copy is kept) |
-| `<claude dir>/budget-manager/quiet.sh`, `usage_report.py` | helper tools |
+| `<claude dir>/skills/token-efficient-workflow/SKILL.md` | deprecated compatibility skill (not a native alias) that loads `claude-lean` (skip with `--no-alias`; a customized old copy is kept) |
+| `<claude dir>/budget-manager/quiet.sh`, `usage_report.py` | helper tools (current location; legacy directory name) |
 | `<claude dir>/budget-manager/MANIFEST` | sha256 of installed files (for safe upgrades and removal) |
 | `<project>/.claude/checkpoints/{TEMPLATE.md,README.md,PROJECT_MEMORY.md,ACTIVE}` | only with `--project`, only if absent |
 
@@ -39,13 +39,14 @@ Behaviour:
 - **Your edits are kept:** a modified or foreign file is reported as `KEEP` (exit code 3). `--force` replaces it
   after saving `<file>.bak-<timestamp>`.
 - Claude settings files, your model and effort selection, model environment variables and billing are never touched.
-- The helper tools keep the legacy folder `budget-manager/` in v0.1.x for compatibility with v0.1.0 installs.
+- The helper tools are installed in `budget-manager/`: that is their **current** location; only the name predates
+  the rename. Changing it needs a tested migration, so it stays in v0.1.x.
 
 Start a new Claude Code session afterwards; check with `/skills` (or ask “which skills are available?”).
 
 ## Manual installation (any OS)
 Copy `skills/claude-lean/SKILL.md` to `~/.claude/skills/claude-lean/SKILL.md`
-(Windows: `%USERPROFILE%\.claude\skills\claude-lean\SKILL.md`). The alias in `skills/token-efficient-workflow/` is optional. Optionally copy `scripts/quiet.sh`,
+(Windows: `%USERPROFILE%\.claude\skills\claude-lean\SKILL.md`). The deprecated compatibility skill in `skills/token-efficient-workflow/` is optional. Optionally copy `scripts/quiet.sh`,
 `scripts/usage_report.py` anywhere on your PATH and `templates/` into `<project>/.claude/checkpoints/`
 (`checkpoint.md` → `TEMPLATE.md`, `project-memory.md` → `PROJECT_MEMORY.md`, `checkpoints-README.md` → `README.md`).
 

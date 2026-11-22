@@ -3,7 +3,7 @@
 #   scripts/install.sh [--dry-run] [--force] [--project DIR] [--no-tools] [--no-alias]
 # Installs:
 #   <claude dir>/skills/claude-lean/SKILL.md                  (the skill: /claude-lean)
-#   <claude dir>/skills/token-efficient-workflow/SKILL.md     (deprecated alias stub; skip with --no-alias)
+#   <claude dir>/skills/token-efficient-workflow/SKILL.md     (deprecated compatibility skill; skip with --no-alias)
 #   <claude dir>/budget-manager/{quiet.sh,usage_report.py}   (helper tools; legacy folder name kept for upgrades) + MANIFEST
 #   with --project DIR: DIR/.claude/checkpoints/{TEMPLATE.md,README.md,PROJECT_MEMORY.md,ACTIVE} (only if absent)
 # <claude dir> = $CLAUDE_CONFIG_DIR if set, else ~/.claude.

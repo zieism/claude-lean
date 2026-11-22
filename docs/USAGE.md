@@ -6,7 +6,8 @@ The skill loads automatically when Claude Code judges a task multi-step. You can
 
 or in plain words: “Use the claude-lean skill for this task: <task>.”
 
-`/token-efficient-workflow` still works in v0.1.x as a deprecated alias that loads `claude-lean`.
+`/token-efficient-workflow` still works in v0.1.x as a deprecated compatibility skill (not a native alias) that
+loads `claude-lean`.
 
 ## Example workflow
 1. **Start:** `/claude-lean Task T-12: add rate limiting to the upload endpoint.`

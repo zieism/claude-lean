@@ -4,7 +4,7 @@
 [![release](https://img.shields.io/github/v/release/zieism/claude-lean)](https://github.com/zieism/claude-lean/releases/latest)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-_Formerly “Claude Code Budget Manager”. Invoke it with **`/claude-lean`**; `/token-efficient-workflow` remains as a deprecated alias (see [Migration](#migrating-from-v010--v011))._
+_Formerly “Claude Code Budget Manager”. Invoke it with **`/claude-lean`**. `/token-efficient-workflow` remains only as a deprecated compatibility skill (see [Migration](#migrating-from-v010--v011))._
 
 A lightweight, dependency-free toolkit for **reducing unnecessary token consumption in Claude Code** during
 long-running development work, without lowering reasoning quality or test discipline.
@@ -24,9 +24,11 @@ reset safely, keeps noisy command output out of the context, and lets you **meas
 | Command | What it does |
 |---|---|
 | `/claude-lean <task>` | Run a task with the Claude Lean workflow (primary command) |
-| `/token-efficient-workflow` | Deprecated compatibility skill: loads `claude-lean` |
+| `/token-efficient-workflow` | Deprecated compatibility skill (not a native alias): loads `claude-lean` |
 | `~/.claude/budget-manager/quiet.sh NAME -- <cmd>` | Run a command with the full log on disk and a short summary in context |
 | `~/.claude/budget-manager/usage_report.py --session <id>` | Read-only token report for a session (not subscription usage) |
+
+The helper tools live in `~/.claude/budget-manager/`. That is their current location; only the directory name is legacy (see [Installation paths](#installation-paths)).
 
 ## What it does
 - **`claude-lean` skill** (`/claude-lean`):
@@ -89,6 +91,19 @@ scripts/install.sh --project ~/code/app   # optional: checkpoint templates in a 
 - Files you edited are kept unless you pass `--force`, which keeps a backup.
 - Manual and Windows instructions: [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
+## Installation paths
+Current installation (v0.1.2). `~` means `$CLAUDE_CONFIG_DIR` if set, otherwise your home directory's `.claude`.
+
+| Path | Status |
+|---|---|
+| `~/.claude/skills/claude-lean/SKILL.md` | **Current**: the primary skill, invoked as `/claude-lean` |
+| `~/.claude/budget-manager/quiet.sh`, `usage_report.py`, `MANIFEST` | **Current location, legacy name**: the helper tools are still installed here. The directory keeps its pre-rename name so upgrades and uninstalls of earlier installs stay safe; it will only move in a future release with a tested migration |
+| `~/.claude/skills/token-efficient-workflow/SKILL.md` | **Deprecated compatibility skill**: a short stub that loads `claude-lean` (skip it with `--no-alias`); this was the skill's location before v0.1.2 |
+| `<project>/.claude/checkpoints/` | **Current**: project checkpoints (created with `--project`) |
+
+Legacy names that are **not** current: the project name “Claude Code Budget Manager” and the repository URL
+`github.com/zieism/claude-code-budget-manager`, which redirects to `github.com/zieism/claude-lean`.
+
 ## Quick start
 1. Start a new Claude Code session in your project and say:
    > /claude-lean Task T-1: <your task>
@@ -127,7 +142,7 @@ Checkpoints keep what was written down, not every detail of a conversation. See
 |---|---|
 | Skill not listed | Start a **new** session after installing; check `~/.claude/skills/claude-lean/SKILL.md` exists (or `$CLAUDE_CONFIG_DIR/...`). |
 | Installer exits 3 with `KEEP` | A file differs from this version (your edits or another tool). Review it; use `--force` to replace it (a backup is kept). |
-| Tools are under `~/.claude/budget-manager/` | Legacy folder name kept in v0.1.x so v0.1.0 installs upgrade and uninstall cleanly. |
+| Tools are under `~/.claude/budget-manager/` | Expected: this is the current tools location with its legacy name, kept so earlier installs upgrade and uninstall cleanly (see [Installation paths](#installation-paths)). |
 | `usage_report.py` exits 3 | Your Claude Code transcript format is not recognised. Please open an issue with your Claude Code version (no transcript content). |
 | `no matching sessions` | Check `--root`, `--session` prefix and the time window (UTC). |
 | Windows | Use the manual skill copy and `py scripts\usage_report.py`; shell scripts need Git Bash or WSL. |
@@ -135,12 +150,12 @@ Checkpoints keep what was written down, not every detail of a conversation. See
 ## Migrating from v0.1.0 / v0.1.1
 The skill was named `token-efficient-workflow` before v0.1.2. Re-running `scripts/install.sh`:
 - installs **`/claude-lean`** (the full skill);
-- replaces an **unmodified** old `token-efficient-workflow` skill with a short deprecated **alias** that loads
-  `claude-lean`, so `/token-efficient-workflow` keeps working;
+- replaces an **unmodified** old `token-efficient-workflow` skill with a short **deprecated compatibility skill**
+  that loads `claude-lean`, so `/token-efficient-workflow` keeps working;
 - **keeps a customized** old skill untouched (reported as `KEEP`, exit code 3), next to `/claude-lean`. Merge your
   changes into `claude-lean` if you want them there, then use `--force` to replace the old file (a backup is kept).
 
-The alias is a plain skill that tells Claude to load `claude-lean`; it is not a built-in Claude Code alias feature.
+The compatibility skill is a plain skill that tells Claude to load `claude-lean`; it is not a native Claude Code alias.
 Skip it with `--no-alias`. It will be removed in a future minor release.
 
 ## Known limitations
