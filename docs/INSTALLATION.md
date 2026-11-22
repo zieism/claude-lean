@@ -27,7 +27,8 @@ Run it again without `--dry-run` after reviewing the plan.
 What gets installed (`<claude dir>` = `$CLAUDE_CONFIG_DIR` or `~/.claude`):
 | Path | Purpose |
 |---|---|
-| `<claude dir>/skills/token-efficient-workflow/SKILL.md` | the skill (user level: all projects) |
+| `<claude dir>/skills/claude-lean/SKILL.md` | the skill, `/claude-lean` (user level: all projects) |
+| `<claude dir>/skills/token-efficient-workflow/SKILL.md` | deprecated alias that loads `claude-lean` (skip with `--no-alias`; a customized old copy is kept) |
 | `<claude dir>/budget-manager/quiet.sh`, `usage_report.py` | helper tools |
 | `<claude dir>/budget-manager/MANIFEST` | sha256 of installed files (for safe upgrades and removal) |
 | `<project>/.claude/checkpoints/{TEMPLATE.md,README.md,PROJECT_MEMORY.md,ACTIVE}` | only with `--project`, only if absent |
@@ -43,16 +44,16 @@ Behaviour:
 Start a new Claude Code session afterwards; check with `/skills` (or ask “which skills are available?”).
 
 ## Manual installation (any OS)
-Copy `skills/token-efficient-workflow/SKILL.md` to `~/.claude/skills/token-efficient-workflow/SKILL.md`
-(Windows: `%USERPROFILE%\.claude\skills\token-efficient-workflow\SKILL.md`). Optionally copy `scripts/quiet.sh`,
+Copy `skills/claude-lean/SKILL.md` to `~/.claude/skills/claude-lean/SKILL.md`
+(Windows: `%USERPROFILE%\.claude\skills\claude-lean\SKILL.md`). The alias in `skills/token-efficient-workflow/` is optional. Optionally copy `scripts/quiet.sh`,
 `scripts/usage_report.py` anywhere on your PATH and `templates/` into `<project>/.claude/checkpoints/`
 (`checkpoint.md` → `TEMPLATE.md`, `project-memory.md` → `PROJECT_MEMORY.md`, `checkpoints-README.md` → `README.md`).
 
 ## Windows
 - **Skill:** manual copy as above (PowerShell):
   ```powershell
-  New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\token-efficient-workflow" | Out-Null
-  Copy-Item skills\token-efficient-workflow\SKILL.md "$env:USERPROFILE\.claude\skills\token-efficient-workflow\SKILL.md"
+  New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\claude-lean" | Out-Null
+  Copy-Item skills\claude-lean\SKILL.md "$env:USERPROFILE\.claude\skills\claude-lean\SKILL.md"
   ```
 - `usage_report.py`: `py scripts\usage_report.py` (standard library only).
 - `install.sh` / `quiet.sh`: run under Git Bash or WSL.

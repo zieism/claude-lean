@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # install.sh — install Claude Lean (idempotent, non-destructive).
-#   scripts/install.sh [--dry-run] [--force] [--project DIR] [--no-tools]
+#   scripts/install.sh [--dry-run] [--force] [--project DIR] [--no-tools] [--no-alias]
 # Installs:
-#   <claude dir>/skills/token-efficient-workflow/SKILL.md     (the skill)
+#   <claude dir>/skills/claude-lean/SKILL.md                  (the skill: /claude-lean)
+#   <claude dir>/skills/token-efficient-workflow/SKILL.md     (deprecated alias stub; skip with --no-alias)
 #   <claude dir>/budget-manager/{quiet.sh,usage_report.py}   (helper tools; legacy folder name kept for upgrades) + MANIFEST
 #   with --project DIR: DIR/.claude/checkpoints/{TEMPLATE.md,README.md,PROJECT_MEMORY.md,ACTIVE} (only if absent)
 # <claude dir> = $CLAUDE_CONFIG_DIR if set, else ~/.claude.
@@ -13,12 +14,12 @@
 set -euo pipefail
 SRC=$(cd "$(dirname "$0")/.." && pwd)
 CLAUDE_DIR=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
-DRY=0; FORCE=0; PROJECT=""; TOOLS=1
+DRY=0; FORCE=0; PROJECT=""; TOOLS=1; ALIAS=1
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dry-run) DRY=1 ;; --force) FORCE=1 ;; --no-tools) TOOLS=0 ;;
+    --dry-run) DRY=1 ;; --force) FORCE=1 ;; --no-tools) TOOLS=0 ;; --no-alias) ALIAS=0 ;;
     --project) PROJECT=${2:?--project needs a directory}; shift ;;
-    -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac; shift
 done
@@ -44,7 +45,10 @@ place() {  # place SRC_FILE DEST_FILE MODE
 "
 }
 echo "Claude Lean v$(cat "$SRC/VERSION" 2>/dev/null || echo dev) — installing into $CLAUDE_DIR"
-place "$SRC/skills/token-efficient-workflow/SKILL.md" "$CLAUDE_DIR/skills/token-efficient-workflow/SKILL.md" 644
+place "$SRC/skills/claude-lean/SKILL.md" "$CLAUDE_DIR/skills/claude-lean/SKILL.md" 644
+# v0.1.0/v0.1.1 installed the full skill under the old name. An unmodified copy is upgraded to the alias stub;
+# a customized copy is KEPT unchanged (never deleted or overwritten without --force).
+[ "$ALIAS" = 1 ] && place "$SRC/skills/token-efficient-workflow/SKILL.md" "$CLAUDE_DIR/skills/token-efficient-workflow/SKILL.md" 644
 if [ "$TOOLS" = 1 ]; then
   place "$SRC/scripts/quiet.sh" "$CLAUDE_DIR/budget-manager/quiet.sh" 755
   place "$SRC/scripts/usage_report.py" "$CLAUDE_DIR/budget-manager/usage_report.py" 755
@@ -67,5 +71,5 @@ if [ -n "$PROJECT" ]; then
   fi
 fi
 echo "Claude settings, your model and effort selection were not touched."
-[ "$CONFLICT" = 1 ] && { echo "Some files were kept because they differ from this version (see KEEP above)."; exit 3; }
-echo "Done. Start a new Claude Code session to load the skill."
+[ "$CONFLICT" = 1 ] && { echo "Some files were kept because they differ from this version (see KEEP above). /claude-lean is installed; a kept token-efficient-workflow skill keeps working as before."; exit 3; }
+echo "Done. Start a new Claude Code session and use /claude-lean."

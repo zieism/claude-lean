@@ -1,7 +1,7 @@
 # Security policy
 
 ## What this toolkit touches
-- Writes only: `<claude dir>/skills/token-efficient-workflow/SKILL.md`, `<claude dir>/budget-manager/*`, and (with
+- Writes only: `<claude dir>/skills/claude-lean/SKILL.md`, the alias `<claude dir>/skills/token-efficient-workflow/SKILL.md`, `<claude dir>/budget-manager/*`, and (with
   `--project`) `<project>/.claude/checkpoints/*` and one `.gitignore` line. `<claude dir>` is `$CLAUDE_CONFIG_DIR` or
   `~/.claude`.
 - Never reads or writes credentials, Claude settings files, model or effort selection, model environment variables,

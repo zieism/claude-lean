@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.2
+- The primary skill is now **`claude-lean`** (`/claude-lean`), matching the project name.
+- `token-efficient-workflow` stays as a **deprecated alias** skill that loads `claude-lean`. It is a plain stub
+  skill, not a built-in alias feature, and can be skipped with `--no-alias`.
+- **Safe upgrade from v0.1.0 / v0.1.1:** an unmodified old skill is replaced by the alias; a **customized old skill
+  is never overwritten or deleted** (reported `KEEP`) unless `--force`, which keeps a backup.
+- Uninstall also removes `claude-lean` (manifest-based; customized files are kept).
+- New tests: legacy upgrade (unmodified → alias), customized legacy skill preserved across install/uninstall,
+  `--no-alias`.
+
 ## v0.1.1
 - Renamed the project to **Claude Lean** (repository `zieism/claude-lean`; old URLs redirect). The skill name
   `token-efficient-workflow` and the tools folder `~/.claude/budget-manager/` are kept for compatibility.

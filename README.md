@@ -1,6 +1,6 @@
 # Claude Lean
 
-_Formerly “Claude Code Budget Manager”. The skill keeps its name `token-efficient-workflow` for compatibility._
+_Formerly “Claude Code Budget Manager”. Invoke it with **`/claude-lean`**; `/token-efficient-workflow` remains as a deprecated alias (see [Migration](#migrating-from-v010--v011))._
 
 A lightweight, dependency-free toolkit for **reducing unnecessary token consumption in Claude Code** during
 long-running development work, without lowering reasoning quality or test discipline.
@@ -17,7 +17,7 @@ reset safely, keeps noisy command output out of the context, and lets you **meas
 > - It does **not enable paid API billing** and makes no API calls.
 
 ## What it does
-- **`token-efficient-workflow` skill:**
+- **`claude-lean` skill** (`/claude-lean`):
   - bounded stages with measurable acceptance criteria;
   - focused tests before broad suites;
   - quiet command output;
@@ -45,7 +45,7 @@ reset safely, keeps noisy command output out of the context, and lets you **meas
 ```mermaid
 flowchart LR
   U[You] -->|task| CC[Claude Code session<br/>your selected model]
-  SK[skill: token-efficient-workflow] -. guides .-> CC
+  SK[skill: claude-lean] -. guides .-> CC
   CC -->|reads / updates| CP[(.claude/checkpoints/<br/>TASK checkpoint + ACTIVE)]
   CC -->|reads / updates decisions| PM[(PROJECT_MEMORY.md)]
   CC -->|runs commands via| Q[quiet.sh]
@@ -79,7 +79,9 @@ scripts/install.sh --project ~/code/app   # optional: checkpoint templates in a 
 
 ## Quick start
 1. Start a new Claude Code session in your project and say:
-   > Use the token-efficient-workflow skill. Task T-1: <your task>.
+   > /claude-lean Task T-1: <your task>
+
+   (or: “Use the claude-lean skill. Task T-1: …”)
 2. Claude creates `.claude/checkpoints/T-1.md` with stages and acceptance criteria, then works stage by stage.
 3. At a stage boundary it tells you whether a fresh session would materially reduce context. To resume later, say
    “resume the active task”.
@@ -111,12 +113,23 @@ Checkpoints keep what was written down, not every detail of a conversation. See
 ## Troubleshooting
 | Symptom | Fix |
 |---|---|
-| Skill not listed | Start a **new** session after installing; check `~/.claude/skills/token-efficient-workflow/SKILL.md` exists (or `$CLAUDE_CONFIG_DIR/...`). |
+| Skill not listed | Start a **new** session after installing; check `~/.claude/skills/claude-lean/SKILL.md` exists (or `$CLAUDE_CONFIG_DIR/...`). |
 | Installer exits 3 with `KEEP` | A file differs from this version (your edits or another tool). Review it; use `--force` to replace it (a backup is kept). |
 | Tools are under `~/.claude/budget-manager/` | Legacy folder name kept in v0.1.x so v0.1.0 installs upgrade and uninstall cleanly. |
 | `usage_report.py` exits 3 | Your Claude Code transcript format is not recognised. Please open an issue with your Claude Code version (no transcript content). |
 | `no matching sessions` | Check `--root`, `--session` prefix and the time window (UTC). |
 | Windows | Use the manual skill copy and `py scripts\usage_report.py`; shell scripts need Git Bash or WSL. |
+
+## Migrating from v0.1.0 / v0.1.1
+The skill was named `token-efficient-workflow` before v0.1.2. Re-running `scripts/install.sh`:
+- installs **`/claude-lean`** (the full skill);
+- replaces an **unmodified** old `token-efficient-workflow` skill with a short deprecated **alias** that loads
+  `claude-lean`, so `/token-efficient-workflow` keeps working;
+- **keeps a customized** old skill untouched (reported as `KEEP`, exit code 3), next to `/claude-lean`. Merge your
+  changes into `claude-lean` if you want them there, then use `--force` to replace the old file (a backup is kept).
+
+The alias is a plain skill that tells Claude to load `claude-lean`; it is not a built-in Claude Code alias feature.
+Skip it with `--no-alias`. It will be removed in a future minor release.
 
 ## Known limitations
 See [docs/LIMITATIONS.md](docs/LIMITATIONS.md):

@@ -2,12 +2,14 @@
 
 ## Invoke the skill
 The skill loads automatically when Claude Code judges a task multi-step. You can also ask for it explicitly:
-> Use the token-efficient-workflow skill for this task: <task>.
+> /claude-lean <task>
 
-or type `/token-efficient-workflow` if your Claude Code version exposes skills as slash commands.
+or in plain words: “Use the claude-lean skill for this task: <task>.”
+
+`/token-efficient-workflow` still works in v0.1.x as a deprecated alias that loads `claude-lean`.
 
 ## Example workflow
-1. **Start:** “Use token-efficient-workflow. Task T-12: add rate limiting to the upload endpoint.”
+1. **Start:** `/claude-lean Task T-12: add rate limiting to the upload endpoint.`
 2. **Checkpoint:** Claude creates `.claude/checkpoints/T-12.md` from the template, writes `T-12` into `ACTIVE`,
    and lists stages, each with an acceptance command. For example:
 

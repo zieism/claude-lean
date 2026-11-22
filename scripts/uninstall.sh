@@ -27,7 +27,7 @@ while read -r h p; do
 done < "$MAN"
 if [ "$KEPT" = 0 ]; then
   echo "remove    $MAN"; run rm -f "$MAN"
-  for d in "$CLAUDE_DIR/budget-manager" "$CLAUDE_DIR/skills/token-efficient-workflow"; do
+  for d in "$CLAUDE_DIR/budget-manager" "$CLAUDE_DIR/skills/claude-lean" "$CLAUDE_DIR/skills/token-efficient-workflow"; do
     if [ -d "$d" ] && [ -z "$(ls -A "$d")" ]; then run rmdir "$d"; fi
   done
 fi

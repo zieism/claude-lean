@@ -25,7 +25,8 @@ class Base(unittest.TestCase):
         self.settings = self.cdir / "settings.json"
         self.settings.write_text(json.dumps({"model": "opus", "theme": "dark", "permissions": {"allow": ["Read"]}}, indent=2))
         self.env = {"CLAUDE_CONFIG_DIR": str(self.cdir)}
-        self.skill = self.cdir / "skills/token-efficient-workflow/SKILL.md"
+        self.skill = self.cdir / "skills/claude-lean/SKILL.md"
+        self.alias = self.cdir / "skills/token-efficient-workflow/SKILL.md"
 
 
 class TestInstaller(Base):
@@ -35,7 +36,8 @@ class TestInstaller(Base):
         self.assertTrue(self.skill.exists() and (self.cdir / "budget-manager/usage_report.py").exists())
         man1 = (self.cdir / "budget-manager/MANIFEST").read_text()
         r2 = sh("install.sh", env=self.env); self.assertEqual(r2.returncode, 0)
-        self.assertNotIn("install   ", r2.stdout); self.assertEqual(r2.stdout.count("unchanged"), 3)
+        self.assertNotIn("install   ", r2.stdout); self.assertEqual(r2.stdout.count("unchanged"), 4)
+        self.assertIn("name: token-efficient-workflow", self.alias.read_text()); self.assertIn("claude-lean", self.alias.read_text())
         self.assertEqual(man1, (self.cdir / "budget-manager/MANIFEST").read_text())
         self.assertEqual(sha(self.settings), before)                       # settings + model untouched
         self.assertEqual(json.loads(self.settings.read_text())["model"], "opus")
@@ -58,6 +60,39 @@ class TestInstaller(Base):
     def test_dry_run_changes_nothing(self):
         r = sh("install.sh", "--dry-run", "--project", str(self.tmp / "proj"), env=self.env)
         self.assertEqual(r.returncode, 0); self.assertFalse(self.skill.exists()); self.assertFalse((self.tmp / "proj").exists())
+
+
+class TestUpgradeFromV01(Base):
+    """v0.1.0 / v0.1.1 installed the full skill as skills/token-efficient-workflow/SKILL.md (recorded in MANIFEST)."""
+    OLD = "---\nname: token-efficient-workflow\ndescription: old full skill\n---\n# Token-efficient workflow\n"
+
+    def legacy_install(self, content, recorded):
+        self.alias.parent.mkdir(parents=True); self.alias.write_text(content)
+        man = self.cdir / "budget-manager/MANIFEST"; man.parent.mkdir(parents=True)
+        man.write_text(f"{hashlib.sha256(recorded.encode()).hexdigest()} {self.alias}\n")
+
+    def test_unmodified_legacy_skill_becomes_alias(self):
+        self.legacy_install(self.OLD, self.OLD)
+        r = sh("install.sh", env=self.env); self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("upgrade   " + str(self.alias), r.stdout)
+        self.assertTrue(self.skill.exists()); self.assertIn("Load the `claude-lean` skill", self.alias.read_text())
+        self.assertEqual(sh("uninstall.sh", env=self.env).returncode, 0)
+        self.assertFalse(self.alias.exists() or self.skill.exists())
+
+    def test_customized_legacy_skill_is_never_overwritten_or_deleted(self):
+        custom = self.OLD + "\nmy own rules\n"
+        self.legacy_install(custom, self.OLD)                      # recorded hash = original; file was customized
+        r = sh("install.sh", env=self.env)
+        self.assertEqual(r.returncode, 3); self.assertIn("KEEP      " + str(self.alias), r.stdout)
+        self.assertEqual(self.alias.read_text(), custom); self.assertTrue(self.skill.exists())
+        self.assertEqual(sh("install.sh", env=self.env).returncode, 3)
+        self.assertEqual(self.alias.read_text(), custom)           # repeated installs still keep it
+        r = sh("uninstall.sh", env=self.env)
+        self.assertEqual(r.returncode, 3); self.assertEqual(self.alias.read_text(), custom); self.assertFalse(self.skill.exists())
+
+    def test_no_alias_option_leaves_legacy_path_alone(self):
+        r = sh("install.sh", "--no-alias", env=self.env)
+        self.assertEqual(r.returncode, 0); self.assertTrue(self.skill.exists()); self.assertFalse(self.alias.exists())
 
 
 class TestUninstall(Base):
@@ -165,10 +200,10 @@ class TestUsage(unittest.TestCase):
 
 class TestPackage(unittest.TestCase):
     def test_skill_frontmatter(self):
-        t = (ROOT / "skills/token-efficient-workflow/SKILL.md").read_text()
-        m = re.match(r"---\nname: ([a-z0-9-]+)\ndescription: (.+?)\n---\n", t, re.S)
-        self.assertTrue(m); self.assertEqual(m.group(1), "token-efficient-workflow"); self.assertLess(len(m.group(2)), 1024)
-        self.assertIn("Never switch models automatically", t)
+        for d, must in (("claude-lean", "Never switch models automatically"), ("token-efficient-workflow", "Load the `claude-lean` skill")):
+            t = (ROOT / "skills" / d / "SKILL.md").read_text()
+            m = re.match(r"---\nname: ([a-z0-9-]+)\ndescription: (.+?)\n---\n", t, re.S)
+            self.assertTrue(m, d); self.assertEqual(m.group(1), d); self.assertLess(len(m.group(2)), 1024); self.assertIn(must, t)
 
     def test_no_private_paths_or_identifiers(self):
         pats = [r"/ro" + r"ot/", r"/ho" + r"me/[a-z]", r"\b100\.\d+\.\d+\.\d+\b", r"\.ts" + r"\.net", r"sk-" + r"ant", r"gh" + r"p_",
@@ -182,7 +217,7 @@ class TestPackage(unittest.TestCase):
 
 class TestModelPreservation(Base):
     """Claude Lean must never change the user's model or effort selection, or any unrelated setting."""
-    OWNED = ("skills/token-efficient-workflow/", "budget-manager/", "projects/")
+    OWNED = ("skills/claude-lean/", "skills/token-efficient-workflow/", "budget-manager/", "projects/")
 
     def setUp(self):
         super().setUp()
@@ -231,12 +266,12 @@ class TestModelPreservation(Base):
                 self.assertIsNone(re.search(pat, t, re.M), f"{f.name} matches {pat}")
 
     def test_skill_and_docs_never_recommend_model_switching(self):
-        skill = (ROOT / "skills/token-efficient-workflow/SKILL.md").read_text()
+        skill = (ROOT / "skills/claude-lean/SKILL.md").read_text()
         for must in ("Never switch models automatically", "never recommend a model change to reduce token usage",
                      "Never run `/model`", "effort"):
             self.assertIn(must, skill)
         self.assertIsNone(re.search(r"\b(opus|sonnet|haiku)\b", skill, re.I))
-        for f in [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), ROOT / "skills/token-efficient-workflow/SKILL.md"]:
+        for f in [ROOT / "README.md", *(ROOT / "docs").glob("*.md"), ROOT / "skills/claude-lean/SKILL.md", ROOT / "skills/token-efficient-workflow/SKILL.md"]:
             self.assertIsNone(re.search(r"(switch|change|use)\w* (to )?(a )?(cheaper|smaller|faster) model|switch\w* to (opus|sonnet|haiku)",
                                         f.read_text(), re.I), f.name)
 
