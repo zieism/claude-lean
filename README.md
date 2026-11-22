@@ -82,9 +82,14 @@ Inspect before you run anything:
 git clone --branch v0.1.2 https://github.com/zieism/claude-lean.git
 cd claude-lean
 less scripts/install.sh
-scripts/install.sh --dry-run              # shows every action, changes nothing
-scripts/install.sh                        # user-level skill + tools
-scripts/install.sh --project ~/code/app   # optional: checkpoint templates in a project
+scripts/install.sh --dry-run
+scripts/install.sh
+```
+`--dry-run` shows every action and changes nothing; the last command installs the user-level skill and tools.
+
+Optional, from the same `claude-lean` directory: add checkpoint templates to one of your projects:
+```bash
+scripts/install.sh --project ~/code/app
 ```
 - Installs into `$CLAUDE_CONFIG_DIR` (if set) or `~/.claude`.
 - Re-running is safe (`unchanged`).
